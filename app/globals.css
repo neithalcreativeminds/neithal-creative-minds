@@ -2508,3 +2508,33 @@ em {
     z-index: 90;
   }
 }
+
+/* =========================================================
+   PORUNAI FASHIONS — FULL IMAGE FIT
+   PNG IMAGE MUST NOT BE CROPPED
+========================================================= */
+
+/*
+   The third project in the portfolio is PORUNAI FASHIONS.
+
+   Its PNG artwork is portrait-oriented, so the normal
+   object-fit: cover would crop the logo.
+
+   Only the third project uses contain.
+   Jayam Fintech and Porunai Naturals remain unchanged.
+*/
+
+.projectCard:nth-child(3) .projectImage {
+  object-fit: contain;
+  object-position: center;
+  padding: 20px;
+}
+
+/*
+   Keep the Porunai Fashions image fully visible on hover.
+*/
+
+.projectCard:nth-child(3):hover .projectImage {
+  transform: scale(1.02);
+  filter: brightness(1.05);
+}
