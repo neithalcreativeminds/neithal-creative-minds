@@ -2527,7 +2527,7 @@ em {
 .projectCard:nth-child(3) .projectImage {
   object-fit: contain;
   object-position: center;
-  padding: 20px;
+  padding: 0;
 }
 
 /*
