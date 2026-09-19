@@ -473,6 +473,7 @@ em {
 
   line-height: 1.85;
 }
+
 .aboutCapabilities {
   display: grid;
 
@@ -1420,43 +1421,61 @@ em {
 
 .floatingActions {
   position: fixed;
+
   z-index: 70;
+
   right: 20px;
+
   bottom: 90px;
 
   display: flex;
+
   flex-direction: column;
+
   align-items: flex-end;
+
   gap: 9px;
 }
 
 .floatingActionsHidden {
   opacity: 0;
+
   visibility: hidden;
+
   pointer-events: none;
 }
 
 .floatButton {
   width: 145px;
+
   height: 46px;
 
   display: flex;
+
   align-items: center;
+
   justify-content: center;
+
   gap: 9px;
 
   padding: 0;
 
   border: 1px solid rgba(243, 239, 229, 0.18);
+
   border-radius: 2px;
 
   background: rgba(16, 15, 13, 0.94);
+
   backdrop-filter: blur(14px);
 
   color: #d7d1c7;
+
   font-size: 10px;
+
   font-weight: 500;
+
   letter-spacing: 0.1em;
+
   text-transform: uppercase;
 
   box-shadow:
@@ -1471,17 +1490,23 @@ em {
 
 .floatButton:hover {
   transform: translateX(-4px);
+
   border-color: var(--gold);
+
   color: var(--gold-light);
+
   background: rgba(24, 23, 20, 0.97);
 }
 
 .floatIcon {
   width: 20px;
+
   height: 20px;
 
   display: inline-flex;
+
   align-items: center;
+
   justify-content: center;
 
   flex-shrink: 0;
@@ -1489,7 +1514,9 @@ em {
 
 .floatIcon svg {
   width: 19px;
+
   height: 19px;
+
   display: block;
 }
 
@@ -1509,29 +1536,38 @@ em {
   color: #25D366;
 }
 
-
 /* =========================================================
    MOBILE FLOATING ACTIONS
 ========================================================= */
 
 @media (max-width: 620px) {
-
   .floatingActions {
     right: 15px;
+
     left: auto;
-    bottom: 80px;
+
+    bottom: 15px;
 
     display: flex;
+
     flex-direction: column;
+
     align-items: flex-end;
+
     gap: 8px;
+
+    z-index: 70;
   }
 
   .floatButton {
     width: 145px;
+
     min-width: 145px;
+
     height: 46px;
+
     padding: 0;
+
     border-radius: 2px;
   }
 
@@ -1541,15 +1577,17 @@ em {
 
   .floatIcon {
     width: 21px;
+
     height: 21px;
   }
 
   .floatIcon svg {
     width: 20px;
+
     height: 20px;
   }
-
 }
+
 /* =========================================================
    AI ASSISTANT
 ========================================================= */
@@ -1896,25 +1934,26 @@ em {
   .navInner {
     width: min(calc(100% - 30px), var(--max));
   }
+
   .aboutCapabilities {
-  grid-template-columns: 1fr;
-}
+    grid-template-columns: 1fr;
+  }
 
-.aboutCapability {
-  min-height: 240px;
-}
+  .aboutCapability {
+    min-height: 240px;
+  }
 
-.aboutCapability h3 {
-  margin-top: 55px;
-}
+  .aboutCapability h3 {
+    margin-top: 55px;
+  }
 
-.aboutStatement {
-  display: block;
-}
+  .aboutStatement {
+    display: block;
+  }
 
-.aboutStatement p {
-  margin-top: 25px;
-}
+  .aboutStatement p {
+    margin-top: 25px;
+  }
 
   .section {
     padding: 85px 0;
@@ -2024,38 +2063,14 @@ em {
     margin-top: 45px;
   }
 
-  .floatingActions {
-    left: 15px;
-
-    bottom: 15px;
-  }
-
-  .floatButton span {
-    display: none;
-  }
-
-  .aiButton {
-    right: 15px;
-
-    bottom: 15px;
-
-    width: 55px;
-
-    padding: 0;
-
-    justify-content: center;
-  }
-
-  .aiLabel {
-    display: none;
-  }
-
-  .aiPanel {
-    right: 15px;
-
-    bottom: 80px;
-  }
+  /*
+     IMPORTANT:
+     Do NOT position floating buttons on the left.
+     Their final mobile position is controlled by the
+     final floating-action block at the bottom of this file.
+  */
 }
+
 /* =========================================================
    PROJECT PORTFOLIO MODAL
 ========================================================= */
@@ -2364,5 +2379,132 @@ em {
     height: 38px;
 
     font-size: 23px;
+  }
+}
+
+.aiWhatsAppButton {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  width: calc(100% - 36px);
+
+  min-height: 46px;
+
+  margin: 0 18px 12px;
+
+  padding: 0 18px;
+
+  border: 1px solid rgba(37, 211, 102, 0.45);
+
+  border-radius: 2px;
+
+  background: rgba(37, 211, 102, 0.08);
+
+  color: #25D366;
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  letter-spacing: 0.08em;
+
+  text-transform: uppercase;
+
+  text-decoration: none;
+
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.aiWhatsAppButton:hover {
+  background: rgba(37, 211, 102, 0.14);
+
+  border-color: #25D366;
+
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   FINAL FLOATING ACTION POSITION — ALL RIGHT / VERTICAL
+========================================================= */
+
+@media (max-width: 620px) {
+  .floatingActions {
+    position: fixed;
+
+    right: 15px;
+
+    left: auto;
+
+    bottom: 15px;
+
+    z-index: 70;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-end;
+
+    gap: 8px;
+
+    width: 145px;
+  }
+
+  .floatButton {
+    width: 145px;
+
+    min-width: 145px;
+
+    height: 46px;
+
+    padding: 0;
+  }
+
+  .floatButton span {
+    display: inline;
+  }
+
+  .aiButton {
+    position: fixed;
+
+    right: 15px;
+
+    left: auto;
+
+    bottom: 123px;
+
+    z-index: 80;
+
+    width: 145px;
+
+    min-width: 145px;
+
+    height: 55px;
+
+    padding: 0 15px;
+
+    justify-content: center;
+  }
+
+  .aiLabel {
+    display: inline;
+  }
+
+  .aiPanel {
+    right: 15px;
+
+    left: 15px;
+
+    bottom: 80px;
+
+    width: auto;
+
+    z-index: 90;
   }
 }
