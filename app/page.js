@@ -203,10 +203,40 @@ export default function Home() {
     setMenuOpen(false);
   }
 
-  function handleEnquiry(event) {
-    event.preventDefault();
-    setFormSent(true);
-  }
+ function handleEnquiry(event) {
+  event.preventDefault();
+
+  const form = event.currentTarget;
+  const formData = new FormData(form);
+
+  const name = formData.get("name");
+  const business = formData.get("business");
+  const email = formData.get("email");
+  const service = formData.get("service");
+  const message = formData.get("message");
+
+  const whatsappMessage = `Hello Neithal Creative Minds,
+
+🔔 NEW PROJECT ENQUIRY
+
+Name: ${name}
+Business / Brand: ${business}
+Email: ${email}
+Service Required: ${service}
+
+Project Details:
+${message}
+
+Thank you.`;
+
+  const whatsappURL = `https://wa.me/918122330789?text=${encodeURIComponent(
+    whatsappMessage
+  )}`;
+
+  window.open(whatsappURL, "_blank");
+
+  setFormSent(true);
+}
 
   function handleAI(event) {
     event.preventDefault();
