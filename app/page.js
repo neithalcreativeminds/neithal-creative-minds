@@ -237,10 +237,26 @@ export default function Home() {
 
   const [selectedProject, setSelectedProject] = useState(null);
 
+  // =========================
+  // AI ASSISTANT STATE
+  // =========================
+
   const [aiOpen, setAiOpen] = useState(false);
   const [aiInput, setAiInput] = useState("");
+  const [aiStage, setAiStage] = useState("start");
+
+  const [aiName, setAiName] = useState("");
+
+  const [aiProject, setAiProject] = useState({
+    business: "",
+    project: "",
+    budget: "",
+  });
+
+  const [showAIWhatsApp, setShowAIWhatsApp] = useState(false);
 
   const chatMessagesRef = useRef(null);
+
   const [messages, setMessages] = useState([
     {
       type: "ai",
@@ -249,40 +265,48 @@ export default function Home() {
     },
   ]);
 
+  // =========================
+  // AI AUTO SCROLL
+  // =========================
+
   useEffect(() => {
-  if (!aiOpen) {
-    return;
-  }
+    if (!aiOpen) {
+      return;
+    }
 
-  const container = chatMessagesRef.current;
+    const container = chatMessagesRef.current;
 
-  if (!container) {
-    return;
-  }
+    if (!container) {
+      return;
+    }
 
-  container.scrollTo({
-    top: container.scrollHeight,
-    behavior: "smooth",
-  });
-}, [messages, aiOpen]);
+    container.scrollTo({
+      top: container.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [messages, aiOpen]);
 
   function handleMenuClick() {
     setMenuOpen(false);
   }
 
- function handleEnquiry(event) {
-  event.preventDefault();
+  // =========================
+  // PROJECT ENQUIRY
+  // =========================
 
-  const form = event.currentTarget;
-  const formData = new FormData(form);
+  function handleEnquiry(event) {
+    event.preventDefault();
 
-  const name = formData.get("name");
-  const business = formData.get("business");
-  const email = formData.get("email");
-  const service = formData.get("service");
-  const message = formData.get("message");
+    const form = event.currentTarget;
+    const formData = new FormData(form);
 
-  const whatsappMessage = `Hello Neithal Creative Minds,
+    const name = formData.get("name");
+    const business = formData.get("business");
+    const email = formData.get("email");
+    const service = formData.get("service");
+    const message = formData.get("message");
+
+    const whatsappMessage = `Hello Neithal Creative Minds,
 
 🔔 NEW PROJECT ENQUIRY
 
@@ -296,14 +320,18 @@ ${message}
 
 Thank you.`;
 
-  const whatsappURL = `https://wa.me/918122330789?text=${encodeURIComponent(
-    whatsappMessage
-  )}`;
+    const whatsappURL = `https://wa.me/918122330789?text=${encodeURIComponent(
+      whatsappMessage
+    )}`;
 
-  window.open(whatsappURL, "_blank");
+    window.open(whatsappURL, "_blank");
 
-  setFormSent(true);
-}
+    setFormSent(true);
+  }
+
+  // =========================
+  // AI ASSISTANT
+  // =========================
 
   function handleAI(event) {
     event.preventDefault();
@@ -314,7 +342,132 @@ Thank you.`;
       return;
     }
 
-    const reply = getAIReply(trimmed);
+    let reply = "";
+    const text = trimmed.toLowerCase();
+
+    // =========================
+    // START
+    // =========================
+
+    if (aiStage === "start") {
+      if (
+        text.includes("ad film") ||
+        text.includes("advertisement") ||
+        text.includes("commercial") ||
+        text.includes("video")
+      ) {
+        reply =
+          "Excellent! 🎬 Before we continue, may I know your name?";
+
+        setAiStage("name");
+        setShowAIWhatsApp(false);
+      } else if (
+        text.includes("social") ||
+        text.includes("instagram") ||
+        text.includes("facebook") ||
+        text.includes("reels")
+      ) {
+        reply =
+          "Absolutely! 📱 Before we continue, may I know your name?";
+
+        setAiStage("name");
+        setShowAIWhatsApp(false);
+      } else if (
+        text.includes("brand video") ||
+        text.includes("brand film")
+      ) {
+        reply =
+          "Great! 🎥 Before we continue, may I know your name?";
+
+        setAiStage("name");
+        setShowAIWhatsApp(false);
+      } else {
+        reply = getAIReply(trimmed);
+      }
+
+    // =========================
+    // NAME
+    // =========================
+
+    } else if (aiStage === "name") {
+      setAiName(trimmed);
+
+      reply =
+        `Nice to meet you, ${trimmed}! 👋 What type of business or product is the project for?`;
+
+      setAiStage("business");
+
+    // =========================
+    // BUSINESS
+    // =========================
+
+    } else if (aiStage === "business") {
+      setAiProject((current) => ({
+        ...current,
+        business: trimmed,
+      }));
+
+      reply =
+        `Nice! ${trimmed} sounds interesting. 💡 What are you looking to create — a product advertisement, brand film, social media content, or something else?`;
+
+      setAiStage("project");
+
+    // =========================
+    // PROJECT
+    // =========================
+
+    } else if (aiStage === "project") {
+      setAiProject((current) => ({
+        ...current,
+        project: trimmed,
+      }));
+
+      reply =
+        `Perfect. 🎯 For "${trimmed}", what is your approximate budget or preferred production scale?`;
+
+      setAiStage("budget");
+
+    // =========================
+    // BUDGET
+    // =========================
+
+    } else if (aiStage === "budget") {
+      setAiProject((current) => ({
+        ...current,
+        budget: trimmed,
+      }));
+
+      reply =
+        `Perfect! 🎬 I have captured your project details.\n\n` +
+        `Name: ${aiName}\n` +
+        `Business: ${aiProject.business}\n` +
+        `Project: ${aiProject.project}\n` +
+        `Budget: ${trimmed}\n\n` +
+        `Would you like me to send these details to the Neithal Creative Minds team on WhatsApp?`;
+
+      setAiStage("complete");
+      setShowAIWhatsApp(true);
+
+    // =========================
+    // COMPLETE
+    // =========================
+
+    } else {
+      reply =
+        "I'd be happy to help with another project. 🎬 Tell me what you'd like to create.";
+
+      setAiStage("start");
+
+      setAiName("");
+
+      setAiProject({
+        business: "",
+        project: "",
+        budget: "",
+      });
+
+      setShowAIWhatsApp(false);
+    }
 
     setMessages((current) => [
       ...current,
@@ -330,6 +483,10 @@ Thank you.`;
 
     setAiInput("");
   }
+
+  // =========================
+  // PROJECT MODAL
+  // =========================
 
   function openProject(project) {
     setSelectedProject(project);
@@ -460,6 +617,7 @@ Thank you.`;
           </div>
 
           <div className="heroBottom">
+
             <span>
               AI FILMS • BRAND STORIES • SOCIAL CONTENT
             </span>
@@ -467,6 +625,7 @@ Thank you.`;
             <span>
               IDEA → STORY → IMPACT
             </span>
+
           </div>
 
         </section>
@@ -1103,68 +1262,83 @@ Thank you.`;
           FLOATING CONTACT BUTTONS
       ========================= */}
 
-{/* =========================
-    FLOATING CONTACT BUTTONS
-========================= */}
-
-<div
-  className={`floatingActions ${
-    aiOpen ? "floatingActionsHidden" : ""
-  }`}
->
-
-  <a
-    className="floatButton callButton"
-    href="tel:+918122330789"
-    aria-label="Call Neithal Creative Minds"
-  >
-    <strong className="floatIcon" aria-hidden="true">
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+      <div
+        className={`floatingActions ${
+          aiOpen ? "floatingActionsHidden" : ""
+        }`}
       >
-        <path
-          d="M6.62 10.79C8.06 13.62 10.38 15.94 13.21 17.38L15.41 15.18C15.69 14.9 16.08 14.82 16.43 14.94C17.55 15.31 18.75 15.51 20 15.51C20.55 15.51 21 15.96 21 16.51V20C21 20.55 20.55 21 20 21C10.61 21 3 13.39 3 4C3 3.45 3.45 3 4 3H7.5C8.05 3 8.5 3.45 8.5 4C8.5 5.25 8.7 6.45 9.07 7.57C9.18 7.92 9.1 8.31 8.82 8.59L6.62 10.79Z"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </strong>
 
-    <span>Call</span>
-  </a>
+        <a
+          className="floatButton callButton"
+          href="tel:+918122330789"
+          aria-label="Call Neithal Creative Minds"
+        >
 
-  <a
-    className="floatButton whatsappButton"
-    href="https://wa.me/918122330789?text=Hello%20Neithal%20Creative%20Minds%2C%20I%20would%20like%20to%20discuss%20a%20project."
-    target="_blank"
-    rel="noreferrer"
-    aria-label="WhatsApp Neithal Creative Minds"
-  >
-    <strong className="floatIcon" aria-hidden="true">
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M20.52 3.48A11.84 11.84 0 0 0 12.08 0C5.48 0 .12 5.36.12 11.96c0 2.11.55 4.17 1.6 5.98L.02 24l6.2-1.63a11.93 11.93 0 0 0 5.86 1.54h.01c6.59 0 11.95-5.36 11.95-11.95 0-3.2-1.25-6.2-3.52-8.48Z"
-          fill="currentColor"
-        />
-        <path
-          d="M17.54 13.97c-.3-.15-1.78-.88-2.05-.98-.27-.1-.47-.15-.67.15-.2.3-.77.98-.94 1.18-.17.2-.35.22-.65.07-.3-.15-1.25-.46-2.38-1.46-.88-.79-1.47-1.76-1.64-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.06 2.87 1.2 3.07.15.2 2.08 3.18 5.04 4.45.7.3 1.25.48 1.68.61.71.23 1.35.2 1.86.12.57-.09 1.78-.73 2.03-1.43.25-.7.25-1.3.17-1.43-.07-.12-.27-.2-.57-.35Z"
-          fill="#11100E"
-        />
-      </svg>
-    </strong>
+          <strong
+            className="floatIcon"
+            aria-hidden="true"
+          >
 
-    <span>WhatsApp</span>
-  </a>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
 
-</div>
+              <path
+                d="M6.62 10.79C8.06 13.62 10.38 15.94 13.21 17.38L15.41 15.18C15.69 14.9 16.08 14.82 16.43 14.94C17.55 15.31 18.75 15.51 20 15.51C20.55 15.51 21 15.96 21 16.51V20C21 20.55 20.55 21 20 21C10.61 21 3 13.39 3 4C3 3.45 3.45 3 4 3H7.5C8.05 3 8.5 3.45 8.5 4C8.5 5.25 8.7 6.45 9.07 7.57C9.18 7.92 9.1 8.31 8.82 8.59L6.62 10.79Z"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+
+            </svg>
+
+          </strong>
+
+          <span>Call</span>
+
+        </a>
+
+        <a
+          className="floatButton whatsappButton"
+          href="https://wa.me/918122330789?text=Hello%20Neithal%20Creative%20Minds%2C%20I%20would%20like%20to%20discuss%20a%20project."
+          target="_blank"
+          rel="noreferrer"
+          aria-label="WhatsApp Neithal Creative Minds"
+        >
+
+          <strong
+            className="floatIcon"
+            aria-hidden="true"
+          >
+
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+
+              <path
+                d="M20.52 3.48A11.84 11.84 0 0 0 12.08 0C5.48 0 .12 5.36.12 11.96c0 2.11.55 4.17 1.6 5.98L.02 24l6.2-1.63a11.93 11.93 0 0 0 5.86 1.54h.01c6.59 0 11.95-5.36 11.95-11.95 0-3.2-1.25-6.2-3.52-8.48Z"
+                fill="currentColor"
+              />
+
+              <path
+                d="M17.54 13.97c-.3-.15-1.78-.88-2.05-.98-.27-.1-.47-.15-.67.15-.2.3-.77.98-.94 1.18-.17.2-.35.22-.65.07-.3-.15-1.25-.46-2.38-1.46-.88-.79-1.47-1.76-1.64-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.2-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.06 2.87 1.2 3.07.15.2 2.08 3.18 5.04 4.45.7.3 1.25.48 1.68.61.71.23 1.35.2 1.86.12.57-.09 1.78-.73 2.03-1.43.25-.7.25-1.3.17-1.43-.07-.12-.27-.2-.57-.35Z"
+                fill="#11100E"
+              />
+
+            </svg>
+
+          </strong>
+
+          <span>WhatsApp</span>
+
+        </a>
+
+      </div>
 
       {/* =========================
           AI ASSISTANT
@@ -1194,8 +1368,9 @@ Thank you.`;
 
           </div>
 
-          <div className="chatMessages"
-          ref={chatMessagesRef}
+          <div
+            className="chatMessages"
+            ref={chatMessagesRef}
           >
 
             {messages.map((message, index) => (
@@ -1208,6 +1383,31 @@ Thank you.`;
             ))}
 
           </div>
+
+          {showAIWhatsApp && (
+            <a
+              className="aiWhatsAppButton"
+              href={`https://wa.me/918122330789?text=${encodeURIComponent(
+                [
+                  "Hello Neithal Creative Minds,",
+                  "",
+                  "I would like to discuss a project.",
+                  "",
+                  `Name: ${aiName}`,
+                  `Business / Brand: ${aiProject.business}`,
+                  `Project: ${aiProject.project}`,
+                  `Budget: ${aiProject.budget}`,
+                  "",
+                  "This enquiry was submitted through the AI Assistant.",
+                ].join("\n")
+              )}`}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => setShowAIWhatsApp(false)}
+            >
+              💬 Send Details to WhatsApp
+            </a>
+          )}
 
           <form
             className="chatForm"
