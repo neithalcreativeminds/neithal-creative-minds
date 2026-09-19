@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const services = [
   {
@@ -136,50 +136,99 @@ const reviews = [
 ];
 
 function getAIReply(message) {
-  const text = message.toLowerCase();
+  const text = message.toLowerCase().trim();
 
+  // 👋 Greetings
+  if (
+    text.includes("hello") ||
+    text.includes("hi") ||
+    text.includes("hey") ||
+    text.includes("vanakkam")
+  ) {
+    return "Hello! 👋 Welcome to Neithal Creative Minds. What are you looking to create — an AI ad film, brand video, social media content, or something else?";
+  }
+
+  // 🎬 AI Ad Film
   if (
     text.includes("ad film") ||
     text.includes("advertisement") ||
-    text.includes("video")
+    text.includes("advertising") ||
+    text.includes("commercial") ||
+    text.includes("promo video") ||
+    text.includes("promotion video")
   ) {
-    return "We create AI-powered ad films, brand videos, reels, shorts and cinematic social content. Tell me about your business and I can suggest a suitable content approach.";
+    return "Excellent! 🎬 We create cinematic AI-powered ad films for brands and businesses. To understand your requirement better, tell me: What type of business or product is the advertisement for?";
   }
 
+  // 🎥 Video / Brand Film
+  if (
+    text.includes("brand video") ||
+    text.includes("brand film") ||
+    text.includes("corporate video") ||
+    text.includes("product video") ||
+    text.includes("video")
+  ) {
+    return "Great! 🎥 We create brand films, product videos, reels, shorts and cinematic visual content. Tell me about your business or product, and what you want the video to achieve.";
+  }
+
+  // 📱 Social Media
   if (
     text.includes("social") ||
     text.includes("instagram") ||
-    text.includes("facebook")
+    text.includes("facebook") ||
+    text.includes("reels") ||
+    text.includes("shorts") ||
+    text.includes("social media")
   ) {
-    return "Our social media service covers content planning, creative production, captions, reels, posts and page management. We can build a consistent content system around your brand.";
+    return "Absolutely! 📱 Our social media service includes content planning, creative production, reels, posts, captions and page management. Tell me which platform or platforms you want to focus on.";
   }
 
+  // 💡 Creative Strategy
+  if (
+    text.includes("creative strategy") ||
+    text.includes("strategy") ||
+    text.includes("campaign") ||
+    text.includes("idea") ||
+    text.includes("concept")
+  ) {
+    return "That's where we can help. 💡 We turn business objectives into creative concepts, scripts, visual directions and digital campaigns. Tell me what you're trying to promote and who your target audience is.";
+  }
+
+  // 💰 Pricing / Budget
   if (
     text.includes("price") ||
     text.includes("pricing") ||
     text.includes("cost") ||
-    text.includes("budget")
+    text.includes("budget") ||
+    text.includes("how much") ||
+    text.includes("rate")
   ) {
-    return "Project pricing depends on the video length, number of scenes, production requirements and content volume. Use the Start a Project form and tell us what you need for a customised quotation.";
+    return "💰 Every project is customised based on the video length, number of scenes, production requirements and content volume. Tell me your approximate budget and what you want to create, and our team can suggest a suitable approach.";
   }
 
+  // 📞 Contact
   if (
     text.includes("contact") ||
     text.includes("team") ||
-    text.includes("talk")
+    text.includes("talk") ||
+    text.includes("call") ||
+    text.includes("whatsapp")
   ) {
-    return "Absolutely. You can use the Start a Project form below or contact the Neithal Creative Minds team directly.";
+    return "Absolutely! 📲 You can use the Start a Project form or WhatsApp our team directly. Tell me briefly what you need, and I'll help you prepare the enquiry.";
   }
 
+  // 🏢 Business information
   if (
-    text.includes("hello") ||
-    text.includes("hi") ||
-    text.includes("hey")
+    text.includes("neithal") ||
+    text.includes("company") ||
+    text.includes("about you") ||
+    text.includes("who are you")
   ) {
-    return "Hello! 👋 Welcome to Neithal Creative Minds. What are you looking to create?";
+    return "Neithal Creative Minds is an AI-powered creative studio focused on cinematic ad films, brand videos, social media content and creative strategy. 🚀 What would you like us to create for your business?";
   }
 
-  return "I'd be happy to help. You can ask me about AI ad films, brand videos, social media management, creative strategy or starting a project.";
+  // 🤝 Default response
+  return "I'd be happy to help! 😊 You can ask me about AI ad films, brand videos, social media management, creative strategy, pricing, or starting a project.";
 }
 
 export default function Home() {
@@ -191,6 +240,7 @@ export default function Home() {
   const [aiOpen, setAiOpen] = useState(false);
   const [aiInput, setAiInput] = useState("");
 
+  const chatMessagesRef = useRef(null);
   const [messages, setMessages] = useState([
     {
       type: "ai",
@@ -198,6 +248,23 @@ export default function Home() {
         "Hello! I'm the Neithal Creative Minds assistant. How can I help you today?",
     },
   ]);
+
+  useEffect(() => {
+  if (!aiOpen) {
+    return;
+  }
+
+  const container = chatMessagesRef.current;
+
+  if (!container) {
+    return;
+  }
+
+  container.scrollTo({
+    top: container.scrollHeight,
+    behavior: "smooth",
+  });
+}, [messages, aiOpen]);
 
   function handleMenuClick() {
     setMenuOpen(false);
@@ -1040,7 +1107,11 @@ Thank you.`;
     FLOATING CONTACT BUTTONS
 ========================= */}
 
-<div className="floatingActions">
+<div
+  className={`floatingActions ${
+    aiOpen ? "floatingActionsHidden" : ""
+  }`}
+>
 
   <a
     className="floatButton callButton"
@@ -1123,7 +1194,9 @@ Thank you.`;
 
           </div>
 
-          <div className="chatMessages">
+          <div className="chatMessages"
+          ref={chatMessagesRef}
+          >
 
             {messages.map((message, index) => (
               <div

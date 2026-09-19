@@ -1430,6 +1430,12 @@ em {
   gap: 9px;
 }
 
+.floatingActionsHidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .floatButton {
   width: 145px;
   height: 46px;
