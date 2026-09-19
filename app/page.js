@@ -38,9 +38,9 @@ const projects = [
       "AI-powered insurance content designed to explain complex products through simple, engaging visual storytelling.",
     visual: "projectVisualOne",
 
-    // Add your actual files later inside public/projects/
-    poster: "/projects/jayam-fintech.jpg",
-    video: "/projects/jayam-fintech.mp4",
+    // Project poster only — client video is hosted on YouTube
+    poster: "/projects/jayam-fintech.png",
+    youtube: "https://youtu.be/Y0XXyY54wpI",
 
     services: [
       "Creative Strategy",
@@ -57,7 +57,7 @@ const projects = [
       "Product-focused visual storytelling created to bring a natural personal-care brand to life.",
     visual: "projectVisualTwo",
 
-    poster: "/projects/porunai-naturals.jpg",
+    poster: "/projects/porunai-naturals.png",
     video: "/projects/porunai-naturals.mp4",
 
     services: [
@@ -75,7 +75,7 @@ const projects = [
       "Fashion-focused creative content built around product presentation, visual identity and modern brand storytelling.",
     visual: "projectVisualThree",
 
-    poster: "/projects/porunai-fashions.jpg",
+    poster: "/projects/porunai-fashions.png",
     video: "/projects/porunai-fashions.mp4",
 
     services: [
@@ -86,6 +86,37 @@ const projects = [
     ],
   },
 ];
+
+function getYouTubeEmbedUrl(url) {
+  if (!url) {
+    return null;
+  }
+
+  try {
+    const parsedUrl = new URL(url);
+    let videoId = "";
+
+    if (parsedUrl.hostname.includes("youtu.be")) {
+      videoId = parsedUrl.pathname.replace(/^\//, "").split("/")[0];
+    } else if (parsedUrl.hostname.includes("youtube.com")) {
+      if (parsedUrl.pathname === "/watch") {
+        videoId = parsedUrl.searchParams.get("v") || "";
+      } else if (parsedUrl.pathname.startsWith("/embed/")) {
+        videoId = parsedUrl.pathname.split("/")[2] || "";
+      } else if (parsedUrl.pathname.startsWith("/shorts/")) {
+        videoId = parsedUrl.pathname.split("/")[2] || "";
+      }
+    }
+
+    if (!videoId) {
+      return null;
+    }
+
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+  } catch {
+    return null;
+  }
+}
 
 const process = [
   {
@@ -1321,7 +1352,7 @@ Thank you.`;
             >
 
               <path
-                d="M20.52 3.48A11.84 11.84 0 0 0 12.08 0C5.48 0 .12 5.36.12 11.96c0 2.11.55 4.17 1.6 5.98L.02 24l6.2-1.63a11.93 11.93 0 0 0 5.86 1.54h.01c6.59 0 11.95-5.36 11.95-11.95 0-3.2-1.25-6.2-3.52-8.48Z"
+                d="M20.52 3.48A11.84 11.84 0 0 0 12.08 0C5.48 0 .12 5.36 .12 11.96c0 2.11.55 4.17 1.6 5.98L.02 24l6.2-1.63a11.93 11.93 0 0 0 5.86 1.54h.01c6.59 0 11.95-5.36 11.95-11.95 0-3.2-1.25-6.2-3.52-8.48Z"
                 fill="currentColor"
               />
 
@@ -1485,32 +1516,41 @@ Thank you.`;
               className={`projectModalMedia ${selectedProject.visual}`}
             >
 
-              <video
-                className="projectModalVideo"
-                controls
-                playsInline
-                preload="metadata"
-                poster={selectedProject.poster}
-                src={selectedProject.video}
-              />
+              {selectedProject.youtube &&
+              getYouTubeEmbedUrl(selectedProject.youtube) ? (
+                <iframe
+                  className="projectModalVideo"
+                  src={getYouTubeEmbedUrl(selectedProject.youtube)}
+                  title={`${selectedProject.title} project video`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              ) : selectedProject.video ? (
+                <video
+                  className="projectModalVideo"
+                  controls
+                  playsInline
+                  preload="metadata"
+                  poster={selectedProject.poster}
+                  src={selectedProject.video}
+                />
+              ) : (
+                <div className="projectModalFallback">
 
-              <div className="projectModalFallback">
+                  <span>
+                    PROJECT FILM
+                  </span>
 
-                <span>
-                  PROJECT FILM
-                </span>
+                  <strong>
+                    {selectedProject.title}
+                  </strong>
 
-                <strong>
-                  {selectedProject.title}
-                </strong>
+                  <small>
+                    Project video coming soon.
+                  </small>
 
-                <small>
-                  Add the project MP4 to
-                  <br />
-                  public/projects/
-                </small>
-
-              </div>
+                </div>
+              )}
 
             </div>
 
